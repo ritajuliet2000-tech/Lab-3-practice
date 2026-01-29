@@ -4,4 +4,15 @@ format: html
 editor: visual
 ---
 
-## Question 4: Load Stroop dataset from GitHub 
+## Question 4: Load the Stroop dataset from GitHub
+
+#run only once to download the data
+
+```{r}
+stroop_data <- read.delim( "https://raw.githubusercontent.com/Lakens/Stroop/master/stroop.txt", header = TRUE, stringsAsFactors = FALSE )
+write.csv( stroop_data, file = "stroop.csv", row.names = FALSE )
+```
+
+```{r}
+stroop_data <- read.csv("stroop.csv",header = TRUE)
+```
