@@ -1,0 +1,7 @@
+---
+title: "Lab 3 analysis"
+format: html
+editor: visual
+---
+
+## Question 4: Load Stroop dataset from GitHub 
