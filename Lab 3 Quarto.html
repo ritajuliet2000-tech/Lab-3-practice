@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab 3 analysis</title>
+<title>lab-3-quarto</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -80,34 +80,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Lab 3 analysis</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<section id="question-4-load-the-stroop-dataset-from-github" class="level2">
-<h2 class="anchored" data-anchor-id="question-4-load-the-stroop-dataset-from-github">Question 4: Load the Stroop dataset from GitHub</h2>
-<p>#run only once to download the data</p>
+<p>title: “Main Analysis” author: “Somtoo” date: “29 January 2026” format: html —</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>stroop_data <span class="ot">&lt;-</span> <span class="fu">read.delim</span>( <span class="st">"https://raw.githubusercontent.com/Lakens/Stroop/master/stroop.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span> )</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>( stroop_data, <span class="at">file =</span> <span class="st">"stroop.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#This code will check if ggplot2 and reshape2 are installed. </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#If not, this code will install these packages.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(reshape2)){<span class="fu">install.packages</span>(<span class="st">'reshape2'</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: reshape2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(ggplot2)){<span class="fu">install.packages</span>(<span class="st">'ggplot2'</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ggplot2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(reshape2)){<span class="fu">install.packages</span>(<span class="st">'reshape2'</span>)}</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Here, we analyze a simple dataset of a Stroop experiment. Students in an introduction to psychology course completed an online Stroop task (http://faculty.washington.edu/chudler/java/ready.html) and named the colors in congruent trials (e.g., the word ‘red’ written in a red font) and in incongruent trials (e.g., the word ‘red’ written in a green font). The time they took to name all words was self-reported in seconds (e.g., 21.3 seconds) for both the congruent and incongruent blocks. In this analysis, we are interested in examining whether there is a Stroop effect.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #run only once to download the data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># stroop_data &lt;- read.table("https://raw.githubusercontent.com/Lakens/Stroop/master/stroop.txt", sep = "\t", header = TRUE)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># write.table(stroop_data, file = "stroop.csv", quote=F, row.names=F)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data_path <span class="ot">&lt;-</span> <span class="st">"./stroop.csv"</span> <span class="co">#This is a variable data path command. It means that as long as this Qmd file is located in the same directory as the data file, you don't need to specify the working directory.</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>stroop_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(data_path, <span class="at">header =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="plotting-the-data" class="level1">
+<h1>Plotting the data</h1>
+<p>When we plot the reaction times, we can visually see that there are no extreme outliers. It is also clear that response times are generally faster for the congruent trials, compared to the incongruent trials.</p>
+<div class="cell" data-fig.heigth="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Draw scatterplot</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Main scatterplot</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(stroop_data, <span class="fu">aes</span>(<span class="at">x =</span> Congruent, <span class="at">y =</span> Incongruent)) <span class="sc">+</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">formula =</span> y<span class="sc">~</span>x, <span class="at">color =</span> <span class="st">'black'</span>) <span class="sc">+</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Incongruent"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Congruent"</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>), <span class="st">"lines"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lab-3-Quarto_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="600"></p>
+</figure>
+</div>
+</div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stroop_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"stroop.csv"</span>,<span class="at">header =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Perform the dependent t-test. Store results a ttest_result.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ttest_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(stroop_data<span class="sc">$</span>Incongruent, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                       stroop_data<span class="sc">$</span>Congruent, </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">alternative =</span> <span class="st">"two.sided"</span>, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">paired =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">var.equal =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#The code below reproduces the ESCI spreadsheet for paired observations by Cumming (2012).</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#store lotal sample size (based on the length of the vector storing congruent RT's)</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">length</span>(stroop_data<span class="sc">$</span>Congruent)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate the differences between congruent and incongruent trials</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>diff <span class="ot">&lt;-</span> stroop_data<span class="sc">$</span>Incongruent <span class="sc">-</span> stroop_data<span class="sc">$</span>Congruent</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate the pooled standard deviation for the d_av effect size recommended by Cumming. </span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>s_av <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((<span class="fu">sd</span>(stroop_data<span class="sc">$</span>Congruent)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">sd</span>(stroop_data<span class="sc">$</span>Incongruent)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="dv">2</span>) </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate Cohen's d following Cumming, 2012</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>d_av <span class="ot">&lt;-</span> <span class="fu">mean</span>(diff) <span class="sc">/</span> s_av</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate Hedges'g, or d_unbiased. Note this is approximation of the correction for Hedges'g.</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>d_unb <span class="ot">&lt;-</span> (<span class="dv">1</span> <span class="sc">-</span> (<span class="dv">3</span> <span class="sc">/</span> (<span class="dv">4</span> <span class="sc">*</span> (N <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="dv">1</span>))) <span class="sc">*</span> d_av </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p>The mean reaction time (in seconds) of participants in the Congruent condition (<em>M</em> = 15.1, <em>SD</em> = 4.1) was lower than the mean of participants in the Incongruent condition (<em>M</em> = 23, <em>SD</em> = 4.78, <em>r</em> = 0.37). A dependent <em>t</em>-test indicated that based on our preregistered alpha level of 0.01 we could reject the null-hypothesis, <em>t</em>(130) = 18.04, <em>p</em> &lt; 0.001. As we can expect from the Stroop effect, the standardized effect size is very large, Hedges’ <em>g<sub>av</sub></em> = 1.76. The congruency effect is very clear when we plot the data from the two groups.</p>
+<div class="cell" data-fig.heigth="4">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lab-3-Quarto_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="600"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 
